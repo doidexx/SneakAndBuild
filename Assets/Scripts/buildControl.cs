@@ -11,6 +11,7 @@ public class buildControl : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         BT = 0;
+        pE.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -19,15 +20,15 @@ public class buildControl : MonoBehaviour {
 	}
 
     void OnTriggerStay(Collider other) {
-        if (Input.GetKey(KeyCode.E)) {
-            if (other.CompareTag("player")) {
-                pE.SetActive(true);
-                if (BT < 8) {
+            if (other.CompareTag("player")) { 
+            pE.SetActive(true);
+            if (Input.GetKey(KeyCode.E) && BT <= 8) {
                     BT += Time.fixedDeltaTime;
-                }
-            } else {
-                pE.SetActive(false);
             }
         }
+    }
+
+    void OnTriggerExit(Collider other) {
+        pE.SetActive(false);
     }
 }

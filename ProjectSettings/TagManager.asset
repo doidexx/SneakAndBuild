@@ -6,6 +6,7 @@ TagManager:
   tags:
   - buildHere
   - player
+  - security
   layers:
   - Default
   - TransparentFX
