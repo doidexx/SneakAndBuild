@@ -7,6 +7,8 @@ TagManager:
   - buildHere
   - player
   - security
+  - half
+  - full
   layers:
   - Default
   - TransparentFX

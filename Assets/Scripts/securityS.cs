@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class securityS : MonoBehaviour {
 
@@ -108,7 +109,12 @@ public class securityS : MonoBehaviour {
 		//catch the player.
 		if (other.gameObject == target) {
 			Debug.Log("Catched");
+            Invoke("ResetGame", 1);
 		}
 	}
+
+    void ResetGame () {
+        SceneManager.LoadScene(0);
+    }
 }
 
