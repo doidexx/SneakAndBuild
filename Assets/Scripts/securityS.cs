@@ -111,6 +111,9 @@ public class securityS : MonoBehaviour {
 			Debug.Log("Catched");
             Invoke("ResetGame", 1);
 		}
+		if (other.gameObject.CompareTag("security")) {
+			looking2 = true;
+		}
 	}
 
     void ResetGame () {
