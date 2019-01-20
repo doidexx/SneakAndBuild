@@ -6,11 +6,14 @@ using UnityEngine.SceneManagement;
 
 public class securityS : MonoBehaviour {
 
+	private AudioSource myA;
+	private Animator myAni;
+	public AudioClip heardS;
 	NavMeshAgent myNav;
 	private Vector3[] patrolP;
-	private Vector3 targetLP;
-	private Material [] myMat;
-	private MeshRenderer myMR;
+	private Vector3 targetLP, targetOP;
+	public Material [] myMat;
+	private SkinnedMeshRenderer myMR;
 	public GameObject eP, dEP, target;
 	private bool looking, looking1, looking2;
     private int j;
@@ -19,11 +22,15 @@ public class securityS : MonoBehaviour {
 	void Start () {
 		stopLT = 0;
 		stopLT1 = 0;
+		targetOP = target.transform.position;
+        targetOP = target.transform.position;
 		patrolP = new Vector3[6];
 		myNav = GetComponent<NavMeshAgent>();
+		myAni = GetComponent<Animator>();
 		eP.SetActive(false);
-		myMat = GetComponent<Renderer>().materials;
-		myMR = GetComponent<MeshRenderer>();
+		myMR = GetComponentInChildren<SkinnedMeshRenderer>();
+        //myMat = myMR.materials;
+        myA = GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -42,10 +49,13 @@ public class securityS : MonoBehaviour {
 		for (int i =0; i < 6; i++) {
 			if (transform.position == patrolP[i]) {
 				j = i + 1;
+				myAni.SetInteger("state", 0);
 				if (j == 6) {
 					j = 0;
 				}
 				myNav.destination = patrolP[j];
+			} else {
+                myAni.SetInteger("state", 1);
 			}
 		}
 		//following the player
@@ -53,9 +63,12 @@ public class securityS : MonoBehaviour {
             myNav.destination = target.transform.position;
 			looking1 = false;
 			dEP.SetActive(true);
+			eP.SetActive(false);
             myMR.material = myMat[1];
+		} else {
+        	myAni.SetInteger("state", 1);
 		}
-        //if the player is not withing the range, go back to patrol.
+		//if the player is not withing the range, go back to patrol.
         if (!looking && !looking1) {
             myNav.destination = patrolP[j];
 			eP.SetActive(false);
@@ -74,15 +87,19 @@ public class securityS : MonoBehaviour {
 		}
 		if (looking2) {
             stopLT1 += Time.fixedDeltaTime;
+            myAni.SetInteger("state", 0);
 		}
 		//counter to stop looking at that location.
-		if (stopLT1 >= 5) {
+		if (stopLT1 >= 7) {
 			looking1 = false;
             looking2 = false;
 			stopLT1 = 0;
 		}
 		//if the player is close enought, follow it.
 		if (Vector3.Distance(transform.position, target.transform.position) < 10f) {
+            if (!myA.isPlaying && !looking && !looking1) {
+                myA.PlayOneShot(heardS);
+            }
 			looking = true;
 		}
 		//counter to stop following after the player is off security sight
@@ -100,6 +117,9 @@ public class securityS : MonoBehaviour {
 		if (Input.GetKey(KeyCode.E)) {
 			if (other.gameObject == target) {
 				targetLP = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z);
+                if (!myA.isPlaying && !looking && !looking1) {
+                    myA.PlayOneShot(heardS);
+                }
 				looking1 = true;
 			}
         }
@@ -109,10 +129,11 @@ public class securityS : MonoBehaviour {
 		//catch the player.
 		if (other.gameObject == target) {
 			Debug.Log("Catched");
-            Invoke("ResetGame", 1);
-		}
-		if (other.gameObject.CompareTag("security")) {
-			looking2 = true;
+			target.transform.position = targetOP;
+			transform.position = patrolP[Random.Range(0,5)];
+			looking = false;
+			looking1 = false;
+			looking2 = false;
 		}
 	}
 
